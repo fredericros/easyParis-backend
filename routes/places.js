@@ -47,15 +47,17 @@ router.put('/like', (req, res) => {
 
 // Vérifier  si l'utilisateur a déjà ou non liké la place
 
-newReview.save().then((newReview) => {
-  // Check if user has already reviewed the place before sending response
-  if (!place.reviews.includes(user._id)) { // User has not reviewed the place
-    Place.updateOne({ _id: place._id }, { $push: { reviews: user._id } }) // Add user ID to reviews
-      .then(() => {
-        res.json({ result: true, response: "review added" });
-      })
-  } 
-});
+        if (place.likes.includes(user._id)) { // User already liked the place
+          Place.updateOne({ _id: place._id }, { $pull: { likes: user._id } }) // Remove user ID from likes
+            .then(() => {
+              res.json({ result: true, response: "like deleted" });
+            });
+        } else { // User has not liked the place
+          Place.updateOne({ _id: place._id }, { $push: { likes: user._id } }) // Add user ID to likes
+            .then(() => {
+              res.json({ result: true, response: "like added" });
+            });
+        }
       });
     });
   });
