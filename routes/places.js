@@ -8,14 +8,15 @@ const Place = require("../models/places");
 
 // =================== ROUTE POUR RECUPERER TOUTES LES PLACES ================= //
 
-router.get("/", (req, res) => {
-  Place.find()
+router.get("/:category", (req, res) => {
+  Place.find({category: req.params.category})
   .populate ('likes', ['username'])
   .populate ('reviews', ['username'])
-  .then((allPlaces) => {
-    if (allPlaces) {
-      res.json({ result: true, places: allPlaces });
+  .then((filteredPlaces) => {
+    if (filteredPlaces) {
+      res.json({ result: true, places: filteredPlaces });
     } else {
+      
       res.json({ result: false, error: "not any places found" });
     }
   });
