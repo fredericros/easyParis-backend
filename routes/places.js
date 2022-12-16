@@ -6,7 +6,7 @@ require("../models/connection");
 const User = require ('../models/users')
 const Place = require("../models/places");
 
-// =================== ROUTE POUR RECUPERER TOUTES LES PLACES ================= //
+// =================== ROUTE POUR RECUPERER LES PLACES EN FONCTION DE LEUR CATEGORIE ================= //
 
 router.get("/:category", (req, res) => {
   Place.find({category: req.params.category})
