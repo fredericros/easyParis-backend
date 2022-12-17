@@ -13,11 +13,17 @@ const bcrypt = require('bcrypt');
 
 // ================================ ROUTE SIGNUP ================================== //
 
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 // Si un des champs n'est pas rempli
 router.post('/signup', (req, res) => {
   if (!checkBody(req.body, ['email', 'username', 'password'])) {
-    res.json({ result: false, error: 'Missing or empty fields' });
+    res.json({ result: false, error: 'Please fill all the fields' });
+    return;
+  }
+
+  if (!EMAIL_REGEX.test(req.body.email)) {
+    res.json({ result: false, error: 'Please enter a valid email' });
     return;
   }
 
@@ -39,7 +45,7 @@ router.post('/signup', (req, res) => {
       });
     } else {
       // User already exists in database
-      res.json({ result: false, error: 'User already exists' });
+      res.json({ result: false, error: 'This username is already used' });
     }
   });
 });
@@ -50,7 +56,7 @@ router.post('/signup', (req, res) => {
 
 router.post('/signin', (req, res) => {
   if (!checkBody(req.body, ['username', 'password'])) {
-    res.json({ result: false, error: 'Missing or empty fields' });
+    res.json({ result: false, error: 'Please fill all the fields' });
     return;
   }
 
@@ -67,7 +73,7 @@ router.post('/signin', (req, res) => {
       }
     } else {
       // If the user doesn't exist, return an error
-      res.json({ result: false, error: 'User not found' });
+      res.json({ result: false, error: 'Invalid username' });
     }
   });
 });
