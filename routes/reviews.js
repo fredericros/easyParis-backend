@@ -10,12 +10,12 @@ const Review = require("../models/reviews");
 // =================== ROUTE POUR RECUPERER LES REVIEWS D'UNE PLACE  ================= //
 
 router.get("/:place", (req, res) => {
-  Review.find()
+  Review.find({place: req.params.place})
     .populate("author", ["username"])
     .populate("place"["name"])
     .sort({ createdAt: "desc" })
     .then((placeReview) => {
-      if (placeReview) {
+      if (!placeReview) {
         res.json({ result: false, error: "not any review" });
       } else {
         res.json({ result: true, review: placeReview });
