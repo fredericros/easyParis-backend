@@ -6,6 +6,24 @@ require("../models/connection");
 const User = require ('../models/users')
 const Place = require("../models/places");
 
+// =================== ROUTE POUR RECUPERER TOUTES LES PLACES  ================= //
+
+
+router.get("/", (req, res) => {
+  Place.find()
+  .populate ('likes', ['username'])
+  .populate ('reviews', ['username'])
+  .then((allPlaces) => {
+    if (allPlaces) {
+      res.json({ result: true, places: allPlaces });
+    } else {
+      res.json({ result: false, error: "not any places found" });
+    }
+  });
+});
+
+
+
 // =================== ROUTE POUR RECUPERER LES PLACES EN FONCTION DE LEUR CATEGORIE ================= //
 
 router.get("/:category", (req, res) => {
