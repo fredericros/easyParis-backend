@@ -18,14 +18,14 @@ router.get("/:place", (req, res) => {
       if (!placeReview) {
         res.json({ result: false, error: "not any review" });
       } else {
-        res.json({ result: true, review: placeReview });
+        res.json({ result: true, reviews: placeReview });
       }
     });
 });
 
 // =================== ROUTE POUR RECUPERER TOUTES LES REVIEWS?? (si on filtre dans le frontend)  ================= //
 
-/*
+
 
 router.get ('/', (req,res) => {
     Review.find()
@@ -33,16 +33,15 @@ router.get ('/', (req,res) => {
     .populate('place' ['name'])
     .sort({ createdAt: 'desc' })
     .then (allReviews => {
-        if (allReviews) {
+        if (!allReviews) {
             res.json({result: false, error: "not any review"})
         } else {
             res.json({result: true, reviews: allReviews })
         }
-
     })
 })
 
-*/
+
 
 // =================== ROUTE POUR POSTER UNE REVIEW SUR UNE PLACE  ================= //
 
