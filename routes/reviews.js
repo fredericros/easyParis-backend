@@ -12,7 +12,7 @@ const Review = require("../models/reviews");
 router.get("/:place", (req, res) => {
   Review.find({place: req.params.place})
     .populate("author", ["username"])
-    .populate("place"["name"])
+    .populate("place", ["title"])
     .sort({ createdAt: "desc" })
     .then((placeReview) => {
       if (!placeReview) {
@@ -30,7 +30,7 @@ router.get("/:place", (req, res) => {
 router.get ('/', (req,res) => {
     Review.find()
     .populate('author', ['username'])
-    .populate('place' ['name'])
+    .populate('place', ['title'])
     .sort({ createdAt: 'desc' })
     .then (allReviews => {
         if (!allReviews) {
@@ -66,7 +66,7 @@ router.post("/", (req, res) => {
           return;
         }
   
-        // Si l'utilisateur a déjà reviewer la place => Créer une nouvellle review dans la collection reviews + ajoute l'ID du user dans la collection places
+        // Si l'utilisateur n'a pas déjà reviewer la place => Créer une nouvellle review dans la collection reviews + ajoute l'ID du user dans la collection places
 
         if (!place.reviews.includes(user._id)) {
             const newReview = new Review({
@@ -79,7 +79,7 @@ router.post("/", (req, res) => {
             newReview.save().then((newReview) => {
                 Place.updateOne({ _id: place._id }, { $push: { reviews: user._id } }) // 
                   .then(() => {
-                    res.json({ result: true, response: "review added", content: newReview.content });
+                    res.json({ result: true, response: "review added", newReview: newReview, username: user.username });
                   })
                 });  
         } else {
