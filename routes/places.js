@@ -5,6 +5,7 @@ const {checkBody} = require('../modules/checkBody')
 require("../models/connection");
 const User = require ('../models/users')
 const Place = require("../models/places");
+const { model } = require("mongoose");
 
 // =================== ROUTE POUR RECUPERER TOUTES LES PLACES  ================= //
 
@@ -12,7 +13,16 @@ const Place = require("../models/places");
 router.get("/", (req, res) => {
   Place.find()
   .populate ('likes', ['username'])
-  .populate ('reviews', ['username'])
+  .populate ([{
+    path: 'reviews',
+    model: 'reviews',
+    select: 'content createdAt',
+    populate:{
+      path: 'author',
+      model:"users",
+      select: "username"
+    }
+  }])
   .then((allPlaces) => {
     if (allPlaces) {
       res.json({ result: true, places: allPlaces });
@@ -29,7 +39,16 @@ router.get("/", (req, res) => {
 router.get("/:category", (req, res) => {
   Place.find({category: req.params.category})
   .populate ('likes', ['username'])
-  .populate ('reviews', ['username'])
+  .populate ([{
+    path: 'reviews',
+    model: 'reviews',
+    select: 'content createdAt',
+    populate:{
+      path: 'author',
+      model:"users",
+      select: "username"
+    }
+  }])
   .then((filteredPlaces) => {
     if (filteredPlaces) {
       res.json({ result: true, places: filteredPlaces });

@@ -66,25 +66,26 @@ router.post("/", (req, res) => {
           return;
         }
   
-        // Si l'utilisateur n'a pas déjà reviewer la place => Créer une nouvellle review dans la collection reviews + ajoute l'ID du user dans la collection places
+        // Si l'utilisateur n'a pas déjà reviewer la place => Créer une nouvelle review dans la collection reviews + ajoute l'ID de la review dans la collection places
 
-        if (!place.reviews.includes(user._id)) {
+        Review.find({ author: user._id, place: place._id }).then((review) => {
+          if(review.length>0) {
+            res.json({result: false, error: "user has already reviewed this place" })
+          } else {
             const newReview = new Review({
               author: user._id,
               place: place._id,
               content: req.body.content,
               createdAt: new Date(),
             });
-      
             newReview.save().then((newReview) => {
-                Place.updateOne({ _id: place._id }, { $push: { reviews: user._id } }) // 
-                  .then(() => {
-                    res.json({ result: true, response: "review added", newReview: newReview, username: user.username });
-                  })
-                });  
-        } else {
-              res.json({result: false, error: "user has already reviewed this place" })
+              Place.updateOne({ _id: place._id }, { $push: { reviews: newReview._id } }) // 
+                .then(() => {
+                  res.json({ result: true, response: "review added", newReview: newReview, username: user.username });
+                })
+              });  
           }
+        })
       });
     });
   });
@@ -152,20 +153,22 @@ router.delete('/delete', (req,res) => {
             return;
           }
     
-          // Si l'utilisateur a déjà reviewer la place => spprimer sa review + pull son ID dans le dociment places
-  
-          if (place.reviews.includes(user._id)) {
-            Place.updateOne({ _id: place._id }, { $pull: { reviews: user._id } })
+          // Si l'utilisateur a déjà reviewer la place => spprimer sa review + pull  l'ID de la review dans le document places
+
+
+        Review.find({ author: user._id, place: place._id }).then((review) => {
+          if(review.length>0) {
+            Place.updateOne({ _id: place._id }, { $pull: { reviews: review[0]._id } })
             .then ((placeToDelete) => {
                 Review.deleteOne({ place: place._id, author: user._id}) 
                     .then(() => {
                       res.json({ result: true, response: "review deleted", data: placeToDelete});
                     })
-            })
+            }) 
           } else {
-                res.json({result: false, error: "review not existing" })
-            }
-  
+            res.json({result: false, error: "review not existing" })
+          }
+        })
         });
       });
     

@@ -6,7 +6,6 @@ const userSchema = mongoose.Schema({
   password: String,
   token: String,
   imageUrl: String,
-  publicId: String,
   description: String
 }, {versionKey: false});
 

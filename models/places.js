@@ -14,7 +14,7 @@ const placeSchema = mongoose.Schema({
   latitude: Number,
   longitude: Number,
   likes: [{type: mongoose.Schema.Types.ObjectId, ref : 'users'}],
-  reviews: [{type: mongoose.Schema.Types.ObjectId, ref : 'users'}]
+  reviews: [{type: mongoose.Schema.Types.ObjectId, ref : 'reviews'}]
 }, {versionKey: false});
 
 const Place = mongoose.model('places', placeSchema);
